@@ -1,4 +1,4 @@
-import {renderEach, renderOne, destroy} from "../lib/render.mjs";
+import { renderEach, renderOne, destroy } from "../lib/render.mjs";
 import {
   state,
   getLogoutContainer,
@@ -7,24 +7,27 @@ import {
   getTimelineContainer,
   getBloomFormContainer,
 } from "../index.mjs";
-import {createLogin, handleLogin} from "../components/login.mjs";
-import {createLogout, handleLogout} from "../components/logout.mjs";
-import {createProfile} from "../components/profile.mjs";
+import { createLogin, handleLogin } from "../components/login.mjs";
+import { createLogout, handleLogout } from "../components/logout.mjs";
+import { createProfile } from "../components/profile.mjs";
 import {
   createBloomForm,
   handleBloomSubmit,
   handleTyping,
 } from "../components/bloom-form.mjs";
-import {createBloom} from "../components/bloom.mjs";
+import { createBloom } from "../components/bloom.mjs";
 
 // Home view - logged in or not
 function homeView() {
+  // console.trace();
   destroy();
 
   if (state.isLoggedIn) {
     renderOne(
       {
-        profileData: state.profiles.find((p) => p.username === state.currentUser),
+        profileData: state.profiles.find(
+          (p) => p.username === state.currentUser
+        ),
         whoToFollow: state.whoToFollow,
         isLoggedIn: state.isLoggedIn,
       },
@@ -69,4 +72,4 @@ function homeView() {
       ?.addEventListener("submit", handleLogin);
   }
 }
-export {homeView};
+export { homeView };

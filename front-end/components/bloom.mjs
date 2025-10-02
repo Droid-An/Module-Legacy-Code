@@ -35,9 +35,10 @@ const createBloom = (template, bloom) => {
 };
 
 function _formatHashtags(text) {
+  console.log(text);
   if (!text) return text;
   return text.replace(
-    /\B#[^#]+/g,
+    /\B#[^#\s]+/g,
     (match) => `<a href="/hashtag/${match.slice(1)}">${match}</a>`
   );
 }
@@ -84,4 +85,4 @@ function _formatTimestamp(timestamp) {
   }
 }
 
-export {createBloom};
+export { createBloom };
