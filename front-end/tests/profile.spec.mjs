@@ -57,9 +57,9 @@ test.describe("Profile View", () => {
   });
 
   test("allows unfollowing a user from their profile", async ({ page }) => {
-    // await signUp(page, "sample");
+    await signUp(page, "sample");
     await signUp(page, "AnotherUser");
-    await logout(page);
+    // await logout(page);
     // Given a profile component AnotherUser
     // And I am logged in as sample
     await loginAsSample(page);
