@@ -5,7 +5,6 @@ import {
   loginAsJustSomeGuy,
   waitForLocatorToHaveMatches,
   signUp,
-  logout,
 } from "./test-utils.mjs";
 
 test.describe("Profile View", () => {
@@ -57,13 +56,11 @@ test.describe("Profile View", () => {
   });
 
   test("allows unfollowing a user from their profile", async ({ page }) => {
-    await signUp(page, "sample");
     await signUp(page, "AnotherUser");
-    // await logout(page);
     // Given a profile component AnotherUser
     // And I am logged in as sample
     await loginAsSample(page);
-    await page.goto("/#/profile/AS");
+    await page.goto("/#/profile/AnotherUser");
     // And sample is following AS
     await page.click('[data-action="follow"]');
 
@@ -79,6 +76,6 @@ test.describe("Profile View", () => {
     const followerCount = page.locator("[data-follower-count]");
     await expect(followerCount).toHaveText("0");
     // And the unfollow button is not visible
-    await expect(unfollowButton).toBe("hidden");
+    await expect(unfollowButton).toBeHidden();
   });
 });
