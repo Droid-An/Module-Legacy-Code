@@ -212,6 +212,19 @@ def user_blooms(profile_username):
     return jsonify(user_blooms)
 
 
+def rebloom(bloom_id):
+    try:
+        id_int = int(bloom_id)
+    except ValueError:
+        return make_response((f"Invalid bloom id", 400))
+    blooms.rebloom(id_int)
+    return jsonify(
+        {
+            "success": True,
+        }
+    )
+
+
 @jwt_required()
 def suggested_follows(limit_str):
     try:

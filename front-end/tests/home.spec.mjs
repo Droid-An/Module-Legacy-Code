@@ -1,8 +1,14 @@
-import {test, expect} from "@playwright/test";
-import {TIMELINE_USERNAMES_ELEMENTS_LOCATOR, loginAsSample, postBloom, logout, waitForLocatorToHaveMatches} from "./test-utils.mjs";
+import { test, expect } from "@playwright/test";
+import {
+  TIMELINE_USERNAMES_ELEMENTS_LOCATOR,
+  loginAsSample,
+  postBloom,
+  logout,
+  waitForLocatorToHaveMatches,
+} from "./test-utils.mjs";
 
 test.describe("Home View", () => {
-  test("shows login component when not logged in", async ({page}) => {
+  test("shows login component when not logged in", async ({ page }) => {
     // Given an index load
     await page.goto("/");
 
@@ -19,7 +25,7 @@ test.describe("Home View", () => {
     ).toBeVisible();
   });
 
-  test("shows core home components when logged in", async ({page}) => {
+  test("shows core home components when logged in", async ({ page }) => {
     // Given I am logged in
     await loginAsSample(page);
 
@@ -31,18 +37,19 @@ test.describe("Home View", () => {
     await expect(page.locator('[data-form="bloom"]')).toBeVisible();
   });
 
-  test("shows timeline after creating a bloom", async ({page}) => {
+  test("shows timeline after creating a bloom", async ({ page }) => {
     // Given I am logged in
     await loginAsSample(page);
-
     // When I create a bloom
     await postBloom(page, "My first bloom!");
 
     // Then I see the bloom in the timeline
-    await expect(page.locator("[data-bloom] [data-content]").first()).toContainText("My first bloom!");
+    await expect(
+      page.locator("[data-bloom] [data-content]").first()
+    ).toContainText("My first bloom!");
   });
 
-  test("hides components after logout", async ({page}) => {
+  test("hides components after logout", async ({ page }) => {
     // Given I am logged in
     await loginAsSample(page);
 
@@ -59,12 +66,19 @@ test.describe("Home View", () => {
     await expect(page.locator('[data-form="bloom"]')).not.toBeAttached();
   });
 
-  test("shows own and followed user's posts in home timeline", async ({page}) => {
+  test("shows own and followed user's posts in home timeline", async ({
+    page,
+  }) => {
     // Given I am logged in as sample who already follows JustSomeGuy
     await loginAsSample(page);
 
-    await waitForLocatorToHaveMatches(page, TIMELINE_USERNAMES_ELEMENTS_LOCATOR);
-    const postUsernames = await page.locator(TIMELINE_USERNAMES_ELEMENTS_LOCATOR).allInnerTexts();
+    await waitForLocatorToHaveMatches(
+      page,
+      TIMELINE_USERNAMES_ELEMENTS_LOCATOR
+    );
+    const postUsernames = await page
+      .locator(TIMELINE_USERNAMES_ELEMENTS_LOCATOR)
+      .allInnerTexts();
     // Then I see my own posts in my timeline
     expect(postUsernames).toContain("sample");
     // And I see my a followed user's posts in my timeline

@@ -1,3 +1,5 @@
+import { apiService } from "../index.mjs";
+
 /**
  * Create a bloom component
  * @param {string} template - The ID of the template to clone
@@ -20,8 +22,11 @@ const createBloom = (template, bloom) => {
   const bloomTime = bloomFrag.querySelector("[data-time]");
   const bloomTimeLink = bloomFrag.querySelector("a:has(> [data-time])");
   const bloomContent = bloomFrag.querySelector("[data-content]");
+  const rebloomButtonEl = bloomFrag.querySelector(
+    "[data-action='share-bloom']"
+  );
+  const rebloomCountEl = bloomFrag.querySelector("[rebloom-count]");
 
-  bloomArticle.setAttribute("data-bloom-id", bloom.id);
   bloomUsername.setAttribute("href", `/profile/${bloom.sender}`);
   bloomUsername.textContent = bloom.sender;
   bloomTime.textContent = _formatTimestamp(bloom.sent_timestamp);
@@ -30,6 +35,10 @@ const createBloom = (template, bloom) => {
     ...bloomParser.parseFromString(_formatHashtags(bloom.content), "text/html")
       .body.childNodes
   );
+  // redo to "bloom.reblooms || 0" once reblooms implemented to object
+  rebloomCountEl.textContent = bloom.reblooms ? bloom.reblooms : 0;
+  rebloomButtonEl.setAttribute("data-id", bloom.id || "");
+  rebloomButtonEl.addEventListener("click", handleRebloom);
 
   return bloomFrag;
 };
@@ -84,4 +93,12 @@ function _formatTimestamp(timestamp) {
   }
 }
 
-export {createBloom};
+async function handleRebloom(event) {
+  const button = event.target;
+  const id = button.getAttribute("data-id");
+  if (!id) return;
+
+  await apiService.rebloom(id);
+}
+
+export { createBloom, handleRebloom };
