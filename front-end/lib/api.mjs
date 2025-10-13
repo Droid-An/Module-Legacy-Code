@@ -214,12 +214,12 @@ async function postBloom(content) {
 
 async function rebloom(id) {
   try {
-    const data = await _apiRequest(`/rebloom/${bloomId}`, {
+    const data = await _apiRequest(`/rebloom/${id}`, {
       method: "POST",
-      body: JSON.stringify({ id }),
     });
     if (data.success) {
-      console.log(data);
+      await getBlooms();
+      await getProfile(state.currentUser);
     }
   } catch (error) {}
 }

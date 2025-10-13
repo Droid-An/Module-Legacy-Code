@@ -1,4 +1,4 @@
-import { apiService } from "../index.mjs";
+import { apiService, state } from "../index.mjs";
 
 /**
  * Create a bloom component
@@ -25,7 +25,7 @@ const createBloom = (template, bloom) => {
   const rebloomButtonEl = bloomFrag.querySelector(
     "[data-action='share-bloom']"
   );
-  const rebloomCountEl = bloomFrag.querySelector("[rebloom-count]");
+  const rebloomCountEl = bloomFrag.querySelector("[data-rebloom-count]");
 
   bloomUsername.setAttribute("href", `/profile/${bloom.sender}`);
   bloomUsername.textContent = bloom.sender;
@@ -36,7 +36,7 @@ const createBloom = (template, bloom) => {
       .body.childNodes
   );
   // redo to "bloom.reblooms || 0" once reblooms implemented to object
-  rebloomCountEl.textContent = bloom.reblooms ? bloom.reblooms : 0;
+  rebloomCountEl.textContent = bloom.reblooms;
   rebloomButtonEl.setAttribute("data-id", bloom.id || "");
   rebloomButtonEl.addEventListener("click", handleRebloom);
 
@@ -97,8 +97,15 @@ async function handleRebloom(event) {
   const button = event.target;
   const id = button.getAttribute("data-id");
   if (!id) return;
-
+  addRebloomToFeed(id);
   await apiService.rebloom(id);
+}
+
+async function addRebloomToFeed(id) {
+  const bloomContent = state.timelineBlooms.find(
+    (bloom) => bloom.id == id
+  ).content;
+  apiService.postBloom(bloomContent);
 }
 
 export { createBloom, handleRebloom };
