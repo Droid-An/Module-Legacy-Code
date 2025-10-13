@@ -12,6 +12,7 @@ CREATE TABLE blooms (
     content TEXT NOT NULL,
     send_timestamp TIMESTAMP NOT NULL,
     reblooms INT NOT NULL DEFAULT 0
+    original_bloom_id BIGINT REFERENCES blooms(id)
 );
 
 CREATE TABLE follows (

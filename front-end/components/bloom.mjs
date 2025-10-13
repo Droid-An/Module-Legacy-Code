@@ -1,4 +1,4 @@
-import { apiService, state } from "../index.mjs";
+import { apiService } from "../index.mjs";
 
 /**
  * Create a bloom component
@@ -97,15 +97,10 @@ async function handleRebloom(event) {
   const button = event.target;
   const id = button.getAttribute("data-id");
   if (!id) return;
-  addRebloomToFeed(id);
-  await apiService.rebloom(id);
-}
 
-async function addRebloomToFeed(id) {
-  const bloomContent = state.timelineBlooms.find(
-    (bloom) => bloom.id == id
-  ).content;
-  apiService.postBloom(bloomContent);
+  // maybe rename to rebloom counter
+  await apiService.updateRebloomCounter(id);
+  // await apiService.postRebloom(id);
 }
 
 export { createBloom, handleRebloom };

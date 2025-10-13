@@ -212,10 +212,23 @@ async function postBloom(content) {
   }
 }
 
-async function rebloom(id) {
+async function updateRebloomCounter(id) {
   try {
-    const data = await _apiRequest(`/rebloom/${id}`, {
+    const data = await _apiRequest(`/rebloom_counter/${id}`, {
       method: "POST",
+    });
+    if (data.success) {
+      await getBlooms();
+      await getProfile(state.currentUser);
+    }
+  } catch (error) {}
+}
+
+async function postRebloom(originalId) {
+  try {
+    const data = await _apiRequest(`/rebloom`, {
+      method: "POST",
+      body: JSON.stringify({ id: originalId }),
     });
     if (data.success) {
       await getBlooms();
@@ -304,7 +317,8 @@ const apiService = {
   getBlooms,
   postBloom,
   getBloomsByHashtag,
-  rebloom,
+  updateRebloomCounter,
+  postRebloom,
 
   // User methods
   getProfile,

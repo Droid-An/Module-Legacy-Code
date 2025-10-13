@@ -14,7 +14,8 @@ from endpoints import (
     send_bloom,
     suggested_follows,
     user_blooms,
-    rebloom,
+    update_rebloom_counter,
+    send_rebloom,
 )
 
 from dotenv import load_dotenv
@@ -61,7 +62,12 @@ def main():
     app.add_url_rule("/bloom/<id_str>", methods=["GET"], view_func=get_bloom)
     app.add_url_rule("/blooms/<profile_username>", view_func=user_blooms)
     app.add_url_rule("/hashtag/<hashtag>", view_func=hashtag)
-    app.add_url_rule("/rebloom/<bloom_id>", methods=["POST"], view_func=rebloom)
+    app.add_url_rule(
+        "/rebloom_counter/<bloom_id>",
+        methods=["POST"],
+        view_func=update_rebloom_counter,
+    )
+    app.add_url_rule("/rebloom", methods=["POST"], view_func=send_rebloom)
 
     app.run(host="0.0.0.0", port="3000", debug=True)
 
