@@ -4,8 +4,6 @@ import {
   loginAsSample,
   loginAsJustSomeGuy,
   loginAsSwiz,
-  waitForLocatorToHaveMatches,
-  signUp,
   logout,
   postBloom,
 } from "./test-utils.mjs";
@@ -77,7 +75,7 @@ test.describe("Rebloom functionality", () => {
     const rebloomInfo = page.locator("[data-rebloom-info]").first();
     await expect(rebloomInfo).toBeVisible();
     await expect(rebloomInfo).toHaveText(
-      "↪ Rebloom of sample's post, posted 1h ago"
+      "↪ Rebloom of the sample's post, posted 1h ago"
     );
   });
 });

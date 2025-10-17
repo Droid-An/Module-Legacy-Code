@@ -62,7 +62,7 @@ export async function signUp(page, username) {
  * @param {string} content - Bloom content
  */
 export async function postBloom(page, content) {
-  // Added timeouts here because tests try to fill textarea before the whole page loaded
+  // Added timeouts here because tests try to fill textarea before the whole page is loaded
   await page.waitForTimeout(400);
   await page.fill('[data-form="bloom"] textarea[name="content"]', content);
   await page.waitForTimeout(200);

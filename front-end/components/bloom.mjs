@@ -9,7 +9,9 @@ import { apiService } from "../index.mjs";
  * {"id": Number,
  * "sender": username,
  * "content": "string from textarea",
- * "sent_timestamp": "datetime as ISO 8601 formatted string"}
+ * "sent_timestamp": "datetime as ISO 8601 formatted string"},
+ * "reblooms": "reblooms count",
+ * "original_bloom_id": "id of the rebloomed post"
 
  */
 const createBloom = (template, bloom) => {
@@ -50,7 +52,7 @@ const createBloom = (template, bloom) => {
       .then((originalBloom) => {
         const timeStamp = _formatTimestamp(originalBloom.sent_timestamp);
         //I used inner html to render the arrow ↪ sign
-        rebloomInfoEl.innerHTML = `&#8618; Rebloom of ${originalBloom.sender}'s post, posted ${timeStamp} ago`;
+        rebloomInfoEl.innerHTML = `&#8618; Rebloom of the ${originalBloom.sender}'s post, posted ${timeStamp} ago`;
       });
   }
 

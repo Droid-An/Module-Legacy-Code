@@ -219,18 +219,6 @@ async function postBloom(content) {
   }
 }
 
-async function updateRebloomCounter(id) {
-  try {
-    const data = await _apiRequest(`/rebloom_counter/${id}`, {
-      method: "POST",
-    });
-    if (data.success) {
-      await getBlooms();
-      await getProfile(state.currentUser);
-    }
-  } catch (error) {}
-}
-
 async function postRebloom(originalId) {
   try {
     const data = await _apiRequest(`/rebloom`, {
@@ -325,7 +313,6 @@ const apiService = {
   getBlooms,
   postBloom,
   getBloomsByHashtag,
-  updateRebloomCounter,
   postRebloom,
 
   // User methods
