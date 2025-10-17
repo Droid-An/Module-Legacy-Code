@@ -149,6 +149,13 @@ async function getBloom(bloomId) {
   return bloom;
 }
 
+//this function doesn't update state as getBloom does
+async function fetchBloomData(bloomId) {
+  const endpoint = `/bloom/${bloomId}`;
+  const bloom = await _apiRequest(endpoint);
+  return bloom;
+}
+
 async function getBlooms(username) {
   const endpoint = username ? `/blooms/${username}` : "/home";
 
@@ -314,6 +321,7 @@ const apiService = {
 
   // Bloom methods
   getBloom,
+  fetchBloomData,
   getBlooms,
   postBloom,
   getBloomsByHashtag,

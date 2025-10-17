@@ -17,11 +17,14 @@ class Bloom:
     original_bloom_id: int
 
 
-def add_bloom(*, sender: User, content: str) -> Bloom:
+def add_bloom(
+    *, sender: User, content: str, original_bloom_id: Optional[int] = None
+) -> Bloom:
     hashtags = [word[1:] for word in content.split(" ") if word.startswith("#")]
 
     now = datetime.datetime.now(tz=datetime.UTC)
     bloom_id = int(now.timestamp() * 1000000)
+    print(original_bloom_id)
     with db_cursor() as cur:
         cur.execute(
             "INSERT INTO blooms (id, sender_id, content, send_timestamp, reblooms, original_bloom_id) VALUES (%(bloom_id)s, %(sender_id)s, %(content)s, %(timestamp)s, %(reblooms)s,%(original_bloom_id)s)",
@@ -31,7 +34,7 @@ def add_bloom(*, sender: User, content: str) -> Bloom:
                 content=content,
                 timestamp=datetime.datetime.now(datetime.UTC),
                 reblooms=0,
-                original_bloom_id=None,
+                original_bloom_id=original_bloom_id,
             ),
         )
         for hashtag in hashtags:
@@ -72,7 +75,14 @@ def get_blooms_for_user(
         rows = cur.fetchall()
         blooms = []
         for row in rows:
-            bloom_id, sender_username, content, timestamp, reblooms = row
+            (
+                bloom_id,
+                sender_username,
+                content,
+                timestamp,
+                reblooms,
+                original_bloom_id,
+            ) = row
             blooms.append(
                 Bloom(
                     id=bloom_id,
@@ -80,7 +90,7 @@ def get_blooms_for_user(
                     content=content,
                     sent_timestamp=timestamp,
                     reblooms=reblooms,
-                    original_bloom_id=None,
+                    original_bloom_id=original_bloom_id,
                 )
             )
     return blooms
@@ -89,20 +99,20 @@ def get_blooms_for_user(
 def get_bloom(bloom_id: int) -> Optional[Bloom]:
     with db_cursor() as cur:
         cur.execute(
-            "SELECT blooms.id, users.username, content, send_timestamp, reblooms FROM blooms INNER JOIN users ON users.id = blooms.sender_id WHERE blooms.id = %s",
+            "SELECT blooms.id, users.username, content, send_timestamp, reblooms, original_bloom_id FROM blooms INNER JOIN users ON users.id = blooms.sender_id WHERE blooms.id = %s",
             (bloom_id,),
         )
         row = cur.fetchone()
         if row is None:
             return None
-        bloom_id, sender_username, content, timestamp, reblooms = row
+        bloom_id, sender_username, content, timestamp, reblooms, original_bloom_id = row
         return Bloom(
             id=bloom_id,
             sender=sender_username,
             content=content,
             sent_timestamp=timestamp,
             reblooms=reblooms,
-            original_bloom_id=None,
+            original_bloom_id=original_bloom_id,
         )
 
 
@@ -129,7 +139,14 @@ def get_blooms_with_hashtag(
         rows = cur.fetchall()
         blooms = []
         for row in rows:
-            bloom_id, sender_username, content, timestamp, reblooms = row
+            (
+                bloom_id,
+                sender_username,
+                content,
+                timestamp,
+                reblooms,
+                original_bloom_id,
+            ) = row
             blooms.append(
                 Bloom(
                     id=bloom_id,
@@ -137,7 +154,7 @@ def get_blooms_with_hashtag(
                     content=content,
                     sent_timestamp=timestamp,
                     reblooms=reblooms,
-                    original_bloom_id=None,
+                    original_bloom_id=original_bloom_id,
                 )
             )
     return blooms
@@ -153,6 +170,11 @@ def update_rebloom_counter(bloom_id: int) -> None:
 
 def add_rebloom(*, sender: User, id: int) -> None:
     original_bloom = get_bloom(id)
+    if not original_bloom:
+        return None
+    content = original_bloom.content
+    update_rebloom_counter(id)
+    add_bloom(sender=sender, content=content, original_bloom_id=id)
 
 
 def make_limit_clause(limit: Optional[int], kwargs: Dict[Any, Any]) -> str:

@@ -60,6 +60,24 @@ test.describe("Rebloom functionality", () => {
     await page.waitForTimeout(200);
     const rebloomCount = page.locator("[data-rebloom-count]").nth(1);
     await page.waitForTimeout(200);
-    await expect(rebloomCount).toHaveText("1");
+    await expect(rebloomCount).toHaveText("Rebloomed 1 times");
+  });
+
+  test("New rebloom is marked as a rebloom correctly", async ({ page }) => {
+    await loginAsSample(page);
+
+    await postBloom(page, "My 666 bloom!");
+
+    await logout(page);
+
+    // When I am logged in as Swiz who already follows Sample
+    await loginAsSwiz(page);
+
+    await page.click(`[data-action="share-bloom"]`);
+    const rebloomInfo = page.locator("[data-rebloom-info]").first();
+    await expect(rebloomInfo).toBeVisible();
+    await expect(rebloomInfo).toHaveText(
+      "↪ Rebloom of sample's post, posted 1h ago"
+    );
   });
 });

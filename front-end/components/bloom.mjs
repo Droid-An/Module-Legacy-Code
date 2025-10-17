@@ -26,6 +26,7 @@ const createBloom = (template, bloom) => {
     "[data-action='share-bloom']"
   );
   const rebloomCountEl = bloomFrag.querySelector("[data-rebloom-count]");
+  const rebloomInfoEl = bloomFrag.querySelector("[data-rebloom-info]");
 
   bloomUsername.setAttribute("href", `/profile/${bloom.sender}`);
   bloomUsername.textContent = bloom.sender;
@@ -36,9 +37,22 @@ const createBloom = (template, bloom) => {
       .body.childNodes
   );
   // redo to "bloom.reblooms || 0" once reblooms implemented to object
-  rebloomCountEl.textContent = bloom.reblooms;
+  rebloomCountEl.textContent = `Rebloomed ${bloom.reblooms} times`;
+  rebloomCountEl.hidden = bloom.reblooms == 0;
   rebloomButtonEl.setAttribute("data-id", bloom.id || "");
   rebloomButtonEl.addEventListener("click", handleRebloom);
+  rebloomInfoEl.hidden = bloom.original_bloom_id === null;
+
+  if (bloom.original_bloom_id !== null) {
+    apiService
+      // I had to write another fetch, because getBloom update state, which is causing recursion if I use it here
+      .fetchBloomData(bloom.original_bloom_id)
+      .then((originalBloom) => {
+        const timeStamp = _formatTimestamp(originalBloom.sent_timestamp);
+        //I used inner html to render the arrow ↪ sign
+        rebloomInfoEl.innerHTML = `&#8618; Rebloom of ${originalBloom.sender}'s post, posted ${timeStamp} ago`;
+      });
+  }
 
   return bloomFrag;
 };
@@ -98,9 +112,8 @@ async function handleRebloom(event) {
   const id = button.getAttribute("data-id");
   if (!id) return;
 
-  // maybe rename to rebloom counter
-  await apiService.updateRebloomCounter(id);
-  // await apiService.postRebloom(id);
+  // await apiService.updateRebloomCounter(id);
+  await apiService.postRebloom(id);
 }
 
 export { createBloom, handleRebloom };
