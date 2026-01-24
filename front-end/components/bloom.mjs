@@ -51,8 +51,7 @@ const createBloom = (template, bloom) => {
       .fetchBloomData(bloom.original_bloom_id)
       .then((originalBloom) => {
         const timeStamp = _formatTimestamp(originalBloom.sent_timestamp);
-        //I used inner html to render the arrow ↪ sign
-        rebloomInfoEl.innerHTML = `&#8618; Rebloom of the ${originalBloom.sender}'s post, posted ${timeStamp} ago`;
+        rebloomInfoEl.textContent = `↪ Rebloom of the ${originalBloom.sender}'s post, posted ${timeStamp} ago`;
       });
   }
 
