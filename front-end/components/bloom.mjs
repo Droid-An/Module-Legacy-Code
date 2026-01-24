@@ -25,7 +25,7 @@ const createBloom = (template, bloom) => {
   const bloomTimeLink = bloomFrag.querySelector("a:has(> [data-time])");
   const bloomContent = bloomFrag.querySelector("[data-content]");
   const rebloomButtonEl = bloomFrag.querySelector(
-    "[data-action='share-bloom']"
+    "[data-action='share-bloom']",
   );
   const rebloomCountEl = bloomFrag.querySelector("[data-rebloom-count]");
   const rebloomInfoEl = bloomFrag.querySelector("[data-rebloom-info]");
@@ -36,7 +36,7 @@ const createBloom = (template, bloom) => {
   bloomTimeLink.setAttribute("href", `/bloom/${bloom.id}`);
   bloomContent.replaceChildren(
     ...bloomParser.parseFromString(_formatHashtags(bloom.content), "text/html")
-      .body.childNodes
+      .body.childNodes,
   );
   // redo to "bloom.reblooms || 0" once reblooms implemented to object
   rebloomCountEl.textContent = `Rebloomed ${bloom.reblooms} times`;
@@ -63,7 +63,7 @@ function _formatHashtags(text) {
   if (!text) return text;
   return text.replace(
     /\B#[^#]+/g,
-    (match) => `<a href="/hashtag/${match.slice(1)}">${match}</a>`
+    (match) => `<a href="/hashtag/${match.slice(1)}">${match}</a>`,
   );
 }
 
