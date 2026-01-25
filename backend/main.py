@@ -14,7 +14,6 @@ from endpoints import (
     send_bloom,
     suggested_follows,
     user_blooms,
-    update_rebloom_counter,
     send_rebloom,
 )
 

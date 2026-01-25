@@ -27,13 +27,12 @@ def add_bloom(
     print(original_bloom_id)
     with db_cursor() as cur:
         cur.execute(
-            "INSERT INTO blooms (id, sender_id, content, send_timestamp, reblooms, original_bloom_id) VALUES (%(bloom_id)s, %(sender_id)s, %(content)s, %(timestamp)s, %(reblooms)s,%(original_bloom_id)s)",
+            "INSERT INTO blooms (id, sender_id, content, send_timestamp, original_bloom_id) VALUES (%(bloom_id)s, %(sender_id)s, %(content)s, %(timestamp)s,%(original_bloom_id)s)",
             dict(
                 bloom_id=bloom_id,
                 sender_id=sender.id,
                 content=content,
                 timestamp=datetime.datetime.now(datetime.UTC),
-                reblooms=0,
                 original_bloom_id=original_bloom_id,
             ),
         )
@@ -218,22 +217,11 @@ left join (
     return blooms
 
 
-# remove when remove rebloom column from db
-def update_rebloom_counter(bloom_id: int) -> None:
-    with db_cursor() as cur:
-        cur.execute(
-            "UPDATE blooms SET reblooms = reblooms + 1 WHERE blooms.id = %s",
-            (bloom_id,),
-        )
-
-
 def add_rebloom(*, sender: User, id: int) -> None:
     original_bloom = get_bloom(id)
     if not original_bloom:
         return None
     content = original_bloom.content
-    # remove, because you don't have to update column I delete
-    update_rebloom_counter(id)
     add_bloom(sender=sender, content=content, original_bloom_id=id)
 
 

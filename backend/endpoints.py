@@ -212,19 +212,6 @@ def user_blooms(profile_username):
     return jsonify(user_blooms)
 
 
-def update_rebloom_counter(bloom_id):
-    try:
-        id_int = int(bloom_id)
-    except ValueError:
-        return make_response((f"Invalid bloom id", 400))
-    blooms.update_rebloom_counter(id_int)
-    return jsonify(
-        {
-            "success": True,
-        }
-    )
-
-
 @jwt_required()
 def send_rebloom():
     user = get_current_user()
