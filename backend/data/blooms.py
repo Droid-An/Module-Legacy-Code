@@ -61,9 +61,22 @@ def get_blooms_for_user(
 
         cur.execute(
             f"""SELECT
-              blooms.id, users.username, content, send_timestamp, reblooms, original_bloom_id 
-            FROM
-              blooms INNER JOIN users ON users.id = blooms.sender_id
+                blooms.id,
+                users.username,
+                blooms.content,
+                blooms.send_timestamp,
+                COALESCE(reblooms.reblooms, 0) AS reblooms,
+                blooms.original_bloom_id
+            FROM blooms
+            INNER JOIN users ON users.id = blooms.sender_id
+            LEFT JOIN (
+                SELECT
+                    original_bloom_id,
+                    COUNT(*) AS reblooms
+                FROM blooms
+                WHERE original_bloom_id IS NOT NULL
+                GROUP BY original_bloom_id
+            ) as reblooms ON reblooms.original_bloom_id = blooms.id
             WHERE
               username = %(sender_username)s
               {before_clause}
@@ -99,7 +112,31 @@ def get_blooms_for_user(
 def get_bloom(bloom_id: int) -> Optional[Bloom]:
     with db_cursor() as cur:
         cur.execute(
-            "SELECT blooms.id, users.username, content, send_timestamp, reblooms, original_bloom_id FROM blooms INNER JOIN users ON users.id = blooms.sender_id WHERE blooms.id = %s",
+            """SELECT
+	BLOOMS.ID,
+	USERS.USERNAME,
+	CONTENT,
+	SEND_TIMESTAMP,
+	COALESCE(reblooms.reblooms, 0) AS reblooms,
+	blooms.ORIGINAL_BLOOM_ID
+FROM
+	BLOOMS
+INNER JOIN USERS ON
+	USERS.ID = BLOOMS.SENDER_ID
+LEFT JOIN (
+	SELECT
+		ORIGINAL_BLOOM_ID,
+		COUNT(*) AS REBLOOMS
+	FROM
+		BLOOMS
+	WHERE
+		ORIGINAL_BLOOM_ID IS NOT NULL
+	GROUP BY
+		ORIGINAL_BLOOM_ID
+            ) AS REBLOOMS ON
+	REBLOOMS.ORIGINAL_BLOOM_ID = BLOOMS.ID
+WHERE
+	BLOOMS.ID = %s""",
             (bloom_id,),
         )
         row = cur.fetchone()
@@ -125,10 +162,31 @@ def get_blooms_with_hashtag(
     limit_clause = make_limit_clause(limit, kwargs)
     with db_cursor() as cur:
         cur.execute(
-            f"""SELECT
-              blooms.id, users.username, content, send_timestamp, reblooms, original_bloom_id
-            FROM
-              blooms INNER JOIN hashtags ON blooms.id = hashtags.bloom_id INNER JOIN users ON blooms.sender_id = users.id
+            f"""select
+	blooms.id,
+	users.username,
+	blooms.content,
+	blooms.send_timestamp,
+	coalesce(reblooms.reblooms, 0) as reblooms,
+	blooms.original_bloom_id
+from
+	blooms
+inner join hashtags on
+	blooms.id = hashtags.bloom_id
+inner join users on
+	blooms.sender_id = users.id
+left join (
+	select
+		original_bloom_id,
+		COUNT(*) as reblooms
+	from
+		blooms
+	where
+		original_bloom_id is not null
+	group by
+		original_bloom_id
+            ) as reblooms on
+	reblooms.original_bloom_id = blooms.id
             WHERE
               hashtag = %(hashtag_without_leading_hash)s
             ORDER BY send_timestamp DESC
@@ -160,6 +218,7 @@ def get_blooms_with_hashtag(
     return blooms
 
 
+# remove when remove rebloom column from db
 def update_rebloom_counter(bloom_id: int) -> None:
     with db_cursor() as cur:
         cur.execute(
@@ -173,6 +232,7 @@ def add_rebloom(*, sender: User, id: int) -> None:
     if not original_bloom:
         return None
     content = original_bloom.content
+    # remove, because you don't have to update column I delete
     update_rebloom_counter(id)
     add_bloom(sender=sender, content=content, original_bloom_id=id)
 

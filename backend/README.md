@@ -15,7 +15,7 @@ To run:
 5. Run the database: `../db/run.sh` (you must have Docker installed and running).
 6. Create the database schema: `../db/create-schema.sh`
 
-You may want to run `python3 populate.py` to populate sample data. 
+You may want to run `python3 populate.py` to populate sample data.
 
 If you ever need to wipe the database, just delete `../db/pg_data` (and remember to set it up again after).
 

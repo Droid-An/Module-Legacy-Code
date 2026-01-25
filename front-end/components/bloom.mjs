@@ -38,7 +38,6 @@ const createBloom = (template, bloom) => {
     ...bloomParser.parseFromString(_formatHashtags(bloom.content), "text/html")
       .body.childNodes,
   );
-  // redo to "bloom.reblooms || 0" once reblooms implemented to object
   rebloomCountEl.textContent = `Rebloomed ${bloom.reblooms} times`;
   rebloomCountEl.hidden = bloom.reblooms == 0;
   rebloomButtonEl.setAttribute("data-id", bloom.id || "");
