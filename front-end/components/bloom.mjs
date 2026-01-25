@@ -1,4 +1,4 @@
-import { apiService } from "../index.mjs";
+import {apiService} from "../index.mjs";
 
 /**
  * Create a bloom component
@@ -112,8 +112,7 @@ async function handleRebloom(event) {
   const id = button.getAttribute("data-id");
   if (!id) return;
 
-  // await apiService.updateRebloomCounter(id);
   await apiService.postRebloom(id);
 }
 
-export { createBloom, handleRebloom };
+export {createBloom, handleRebloom};
